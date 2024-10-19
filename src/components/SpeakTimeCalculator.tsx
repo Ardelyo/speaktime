@@ -5,10 +5,11 @@ import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { calculateSpeakingTime, preprocessSpecialCases } from '../utils/timeCalculator';
 import ResultDisplay from './ResultDisplay';
 import ResultsBreakdown from './ResultsBreakdown';
-import { Globe, Calculator, Upload } from 'lucide-react';
+import { Globe, Calculator, Upload, Clock, FileText, Mic } from 'lucide-react';
 
 const SpeakTimeCalculator = () => {
   const [text, setText] = useState('');
@@ -50,110 +51,130 @@ const SpeakTimeCalculator = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h1 className="text-3xl font-bold mb-6 text-center">SpeakTime: Text to Time Calculator</h1>
-      
-      <div className="mb-6">
-        <Label htmlFor="text-input">Enter your text</Label>
-        <Textarea
-          id="text-input"
-          placeholder="Paste or type your text here..."
-          value={text}
-          onChange={handleTextChange}
-          className="min-h-[200px] mb-2"
-        />
-        <div className="flex justify-between text-sm text-gray-600">
-          <span>Words: {wordCount}</span>
-          <span>Estimated Syllables: {syllableCount}</span>
-        </div>
-        <div className="mt-2">
-          <Input type="file" accept=".txt" onChange={handleFileUpload} />
-          <label htmlFor="file-upload" className="cursor-pointer">
-            <Upload className="inline-block mr-2" size={16} />
-            Upload Text File
-          </label>
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-        <div>
-          <Label htmlFor="language-select">Language</Label>
-          <Select value={language} onValueChange={(value: 'english' | 'french' | 'spanish') => setLanguage(value)}>
-            <SelectTrigger id="language-select">
-              <Globe className="inline-block mr-2" size={16} />
-              <SelectValue placeholder="Select language" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="english">English</SelectItem>
-              <SelectItem value="french">French</SelectItem>
-              <SelectItem value="spanish">Spanish</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div>
-          <Label htmlFor="text-type-select">Text Type</Label>
-          <Select value={textType} onValueChange={(value: 'presentation' | 'conversation' | 'poem' | 'script') => setTextType(value)}>
-            <SelectTrigger id="text-type-select">
-              <SelectValue placeholder="Select text type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="presentation">Presentation</SelectItem>
-              <SelectItem value="conversation">Conversation</SelectItem>
-              <SelectItem value="poem">Poem</SelectItem>
-              <SelectItem value="script">Script</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div>
-          <Label htmlFor="speaking-style-select">Speaking Style</Label>
-          <Select value={speakingStyle} onValueChange={(value: 'fast' | 'normal' | 'slow' | 'formal' | 'informal') => setSpeakingStyle(value)}>
-            <SelectTrigger id="speaking-style-select">
-              <SelectValue placeholder="Select speaking style" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="fast">Fast</SelectItem>
-              <SelectItem value="normal">Normal</SelectItem>
-              <SelectItem value="slow">Slow</SelectItem>
-              <SelectItem value="formal">Formal</SelectItem>
-              <SelectItem value="informal">Informal</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="spm-slider">Speaking Pace: {spm} SPM</Label>
-          <Slider
-            id="spm-slider"
-            min={150}
-            max={250}
-            step={10}
-            value={[spm]}
-            onValueChange={(value) => setSpm(value[0])}
-          />
-          <div className="flex justify-between text-sm text-gray-600">
-            <span>Slow</span>
-            <span>Average</span>
-            <span>Fast</span>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-6">
+      <Card className="max-w-4xl mx-auto bg-white shadow-xl rounded-3xl overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-500 text-white p-6">
+          <CardTitle className="text-4xl font-bold text-center">SpeakTime</CardTitle>
+        </CardHeader>
+        <CardContent className="p-6 space-y-6">
+          <div className="bg-gray-50 rounded-2xl p-4 shadow-inner">
+            <Label htmlFor="text-input" className="text-lg font-semibold mb-2 flex items-center">
+              <FileText className="mr-2" />
+              Enter your text
+            </Label>
+            <Textarea
+              id="text-input"
+              placeholder="Paste or type your text here..."
+              value={text}
+              onChange={handleTextChange}
+              className="min-h-[200px] mb-2 rounded-xl"
+            />
+            <div className="flex justify-between text-sm text-gray-600">
+              <span>Words: {wordCount}</span>
+              <span>Estimated Syllables: {syllableCount}</span>
+            </div>
+            <div className="mt-2">
+              <Input type="file" accept=".txt" onChange={handleFileUpload} className="hidden" id="file-upload" />
+              <label htmlFor="file-upload" className="cursor-pointer inline-flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors">
+                <Upload className="mr-2" size={16} />
+                Upload Text File
+              </label>
+            </div>
           </div>
-        </div>
-      </div>
-      
-      <Button onClick={handleCalculate} className="w-full mb-6">
-        <Calculator className="mr-2" size={16} />
-        Calculate Speaking Time
-      </Button>
-      
-      <ResultDisplay result={result} />
-      
-      {showBreakdown && (
-        <ResultsBreakdown
-          paragraphs={[{ text: text, time: result.minutes * 60 + result.seconds }]}
-          totalWords={wordCount}
-          totalSyllables={syllableCount}
-        />
-      )}
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="language-select" className="text-lg font-semibold mb-2 flex items-center">
+                <Globe className="mr-2" />
+                Language
+              </Label>
+              <Select value={language} onValueChange={(value: 'english' | 'french' | 'spanish') => setLanguage(value)}>
+                <SelectTrigger id="language-select" className="rounded-xl">
+                  <SelectValue placeholder="Select language" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="english">English</SelectItem>
+                  <SelectItem value="french">French</SelectItem>
+                  <SelectItem value="spanish">Spanish</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label htmlFor="text-type-select" className="text-lg font-semibold mb-2 flex items-center">
+                <FileText className="mr-2" />
+                Text Type
+              </Label>
+              <Select value={textType} onValueChange={(value: 'presentation' | 'conversation' | 'poem' | 'script') => setTextType(value)}>
+                <SelectTrigger id="text-type-select" className="rounded-xl">
+                  <SelectValue placeholder="Select text type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="presentation">Presentation</SelectItem>
+                  <SelectItem value="conversation">Conversation</SelectItem>
+                  <SelectItem value="poem">Poem</SelectItem>
+                  <SelectItem value="script">Script</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label htmlFor="speaking-style-select" className="text-lg font-semibold mb-2 flex items-center">
+                <Mic className="mr-2" />
+                Speaking Style
+              </Label>
+              <Select value={speakingStyle} onValueChange={(value: 'fast' | 'normal' | 'slow' | 'formal' | 'informal') => setSpeakingStyle(value)}>
+                <SelectTrigger id="speaking-style-select" className="rounded-xl">
+                  <SelectValue placeholder="Select speaking style" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="fast">Fast</SelectItem>
+                  <SelectItem value="normal">Normal</SelectItem>
+                  <SelectItem value="slow">Slow</SelectItem>
+                  <SelectItem value="formal">Formal</SelectItem>
+                  <SelectItem value="informal">Informal</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="spm-slider" className="text-lg font-semibold flex items-center">
+                <Clock className="mr-2" />
+                Speaking Pace: {spm} SPM
+              </Label>
+              <Slider
+                id="spm-slider"
+                min={150}
+                max={250}
+                step={10}
+                value={[spm]}
+                onValueChange={(value) => setSpm(value[0])}
+                className="rounded-xl"
+              />
+              <div className="flex justify-between text-sm text-gray-600">
+                <span>Slow</span>
+                <span>Average</span>
+                <span>Fast</span>
+              </div>
+            </div>
+          </div>
+          
+          <Button onClick={handleCalculate} className="w-full rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 transition-all duration-300">
+            <Calculator className="mr-2" size={16} />
+            Calculate Speaking Time
+          </Button>
+          
+          <ResultDisplay result={result} />
+          
+          {showBreakdown && (
+            <ResultsBreakdown
+              paragraphs={[{ text: text, time: result.minutes * 60 + result.seconds }]}
+              totalWords={wordCount}
+              totalSyllables={syllableCount}
+            />
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
