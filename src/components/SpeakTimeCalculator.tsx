@@ -50,10 +50,10 @@ const SpeakTimeCalculator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <Label htmlFor="text-input" className="text-lg font-semibold mb-2 flex items-center">
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div className="bg-pastel-green rounded-2xl p-6 shadow-sm">
+          <Label htmlFor="text-input" className="text-lg font-semibold mb-2 flex items-center text-dark-text">
             <FileText className="mr-2" />
             Enter your text
           </Label>
@@ -62,27 +62,27 @@ const SpeakTimeCalculator = () => {
             placeholder="Paste or type your text here..."
             value={text}
             onChange={handleTextChange}
-            className="min-h-[200px] mb-2"
+            className="min-h-[200px] mb-2 bg-white rounded-xl"
           />
-          <div className="flex justify-between text-sm text-gray-600 mb-2">
+          <div className="flex justify-between text-sm text-dark-text mb-2">
             <span>Words: {wordCount}</span>
             <span>Estimated Syllables: {syllableCount}</span>
           </div>
           <Input type="file" accept=".txt" onChange={handleFileUpload} className="hidden" id="file-upload" />
-          <label htmlFor="file-upload" className="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors">
+          <label htmlFor="file-upload" className="cursor-pointer inline-flex items-center px-4 py-2 bg-white text-dark-text rounded-full hover:bg-gray-100 transition-colors">
             <Upload className="mr-2" size={16} />
             Upload Text File
           </label>
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <Label htmlFor="language-select" className="text-lg font-semibold mb-2 flex items-center">
+          <div className="bg-pastel-pink rounded-2xl p-6 shadow-sm">
+            <Label htmlFor="language-select" className="text-lg font-semibold mb-2 flex items-center text-dark-text">
               <Globe className="mr-2" />
               Language
             </Label>
             <Select value={language} onValueChange={(value: 'english' | 'french' | 'spanish') => setLanguage(value)}>
-              <SelectTrigger id="language-select">
+              <SelectTrigger id="language-select" className="bg-white rounded-xl">
                 <SelectValue placeholder="Select language" />
               </SelectTrigger>
               <SelectContent>
@@ -93,13 +93,13 @@ const SpeakTimeCalculator = () => {
             </Select>
           </div>
           
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <Label htmlFor="text-type-select" className="text-lg font-semibold mb-2 flex items-center">
+          <div className="bg-pastel-blue rounded-2xl p-6 shadow-sm">
+            <Label htmlFor="text-type-select" className="text-lg font-semibold mb-2 flex items-center text-dark-text">
               <FileText className="mr-2" />
               Text Type
             </Label>
             <Select value={textType} onValueChange={(value: 'presentation' | 'conversation' | 'poem' | 'script') => setTextType(value)}>
-              <SelectTrigger id="text-type-select">
+              <SelectTrigger id="text-type-select" className="bg-white rounded-xl">
                 <SelectValue placeholder="Select text type" />
               </SelectTrigger>
               <SelectContent>
@@ -111,13 +111,13 @@ const SpeakTimeCalculator = () => {
             </Select>
           </div>
           
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <Label htmlFor="speaking-style-select" className="text-lg font-semibold mb-2 flex items-center">
+          <div className="bg-pastel-yellow rounded-2xl p-6 shadow-sm">
+            <Label htmlFor="speaking-style-select" className="text-lg font-semibold mb-2 flex items-center text-dark-text">
               <Mic className="mr-2" />
               Speaking Style
             </Label>
             <Select value={speakingStyle} onValueChange={(value: 'fast' | 'normal' | 'slow' | 'formal' | 'informal') => setSpeakingStyle(value)}>
-              <SelectTrigger id="speaking-style-select">
+              <SelectTrigger id="speaking-style-select" className="bg-white rounded-xl">
                 <SelectValue placeholder="Select speaking style" />
               </SelectTrigger>
               <SelectContent>
@@ -130,8 +130,8 @@ const SpeakTimeCalculator = () => {
             </Select>
           </div>
           
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <Label htmlFor="spm-slider" className="text-lg font-semibold mb-2 flex items-center">
+          <div className="bg-pastel-green rounded-2xl p-6 shadow-sm">
+            <Label htmlFor="spm-slider" className="text-lg font-semibold mb-2 flex items-center text-dark-text">
               <Clock className="mr-2" />
               Speaking Pace: {spm} SPM
             </Label>
@@ -142,8 +142,9 @@ const SpeakTimeCalculator = () => {
               step={10}
               value={[spm]}
               onValueChange={(value) => setSpm(value[0])}
+              className="bg-white rounded-xl"
             />
-            <div className="flex justify-between text-sm text-gray-600 mt-2">
+            <div className="flex justify-between text-sm text-dark-text mt-2">
               <span>Slow</span>
               <span>Average</span>
               <span>Fast</span>
@@ -151,7 +152,7 @@ const SpeakTimeCalculator = () => {
           </div>
         </div>
         
-        <Button onClick={handleCalculate} className="w-full bg-blue-500 hover:bg-blue-600 text-white transition-colors">
+        <Button onClick={handleCalculate} className="w-full bg-pastel-blue hover:bg-blue-200 text-dark-text transition-colors rounded-full">
           <Calculator className="mr-2" size={16} />
           Calculate Speaking Time
         </Button>
