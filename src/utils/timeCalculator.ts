@@ -1,28 +1,31 @@
 export const calculateSpeakingTime = (text: string, language: string, wpm: number) => {
-  // Basic text characteristics
-  const words = text.trim().split(/\s+/);
+  // Step 1: Text Preprocessing
+  const cleanText = text.trim().replace(/\s+/g, ' ');
+
+  // Step 2: Word Count
+  const words = cleanText.split(/\s+/);
   const wordCount = words.length;
-  const characterCount = text.length;
-  const sentenceCount = text.split(/[.!?]+/).length;
 
-  // Linguistic features
-  const syllableCount = estimateSyllableCount(text, language);
-  const averageWordLength = characterCount / wordCount;
-  const averageSentenceLength = wordCount / sentenceCount;
+  // Step 3: Syllable Count
+  const syllableCount = estimateSyllableCount(cleanText, language);
 
-  // Adjust WPM based on complexity
-  const adjustedWPM = adjustWPMForComplexity(wpm, averageWordLength, averageSentenceLength);
+  // Step 4: Average Speaking Rate (WPM is provided as an input)
+  const spm = wpm * 1.4; // Assuming ~1.4 syllables per word on average
 
-  // Calculate speaking time
-  const totalMinutes = syllableCount / (adjustedWPM * 1.4); // Assuming ~1.4 syllables per word
-  const minutes = Math.floor(totalMinutes);
-  const seconds = Math.round((totalMinutes - minutes) * 60);
+  // Step 5 & 7: Base Speaking Time Calculation (using syllables for more accuracy)
+  let totalSeconds = (syllableCount / spm) * 60;
+
+  // Step 6: Adjust for Pauses and Punctuation
+  totalSeconds += countPauses(cleanText);
+
+  // Step 8: Final Speaking Time
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = Math.round(totalSeconds % 60);
   
   return { minutes, seconds };
 };
 
 const estimateSyllableCount = (text: string, language: string): number => {
-  // This is a very basic syllable estimation. For accuracy, consider using a proper NLP library.
   const words = text.toLowerCase().split(/\s+/);
   let count = 0;
   
@@ -30,7 +33,7 @@ const estimateSyllableCount = (text: string, language: string): number => {
     count += word.split(/[aeiou]/gi).length - 1 || 1;
   }
   
-  // Adjust for language (very rough estimate)
+  // Adjust for language (rough estimate)
   const languageMultiplier = {
     english: 1,
     spanish: 1.2,
@@ -40,11 +43,11 @@ const estimateSyllableCount = (text: string, language: string): number => {
   return Math.round(count * languageMultiplier);
 };
 
-const adjustWPMForComplexity = (baseWPM: number, avgWordLength: number, avgSentenceLength: number): number => {
-  let complexityFactor = 1;
-  
-  if (avgWordLength > 6) complexityFactor *= 0.9;
-  if (avgSentenceLength > 20) complexityFactor *= 0.95;
-  
-  return Math.round(baseWPM * complexityFactor);
+const countPauses = (text: string): number => {
+  const commas = (text.match(/,/g) || []).length * 0.25;
+  const periods = (text.match(/\./g) || []).length * 0.5;
+  const questionMarks = (text.match(/\?/g) || []).length * 0.75;
+  const exclamationMarks = (text.match(/!/g) || []).length * 0.5;
+
+  return commas + periods + questionMarks + exclamationMarks;
 };
