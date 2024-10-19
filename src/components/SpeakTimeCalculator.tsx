@@ -9,6 +9,7 @@ import { calculateSpeakingTime, preprocessSpecialCases } from '../utils/timeCalc
 import ResultDisplay from './ResultDisplay';
 import ResultsBreakdown from './ResultsBreakdown';
 import { Globe, Calculator, Upload, Clock, FileText, Mic } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const SpeakTimeCalculator = () => {
   const [text, setText] = useState('');
@@ -20,20 +21,23 @@ const SpeakTimeCalculator = () => {
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [wordCount, setWordCount] = useState(0);
   const [syllableCount, setSyllableCount] = useState(0);
+  const [isCalculating, setIsCalculating] = useState(false);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newText = e.target.value;
     setText(newText);
     setWordCount(newText.trim().split(/\s+/).length);
-    // This is a simplified syllable count, you may want to use a more accurate method
     setSyllableCount(newText.trim().split(/[aeiou]/gi).length);
   };
 
-  const handleCalculate = () => {
+  const handleCalculate = async () => {
+    setIsCalculating(true);
     const preprocessedText = preprocessSpecialCases(text, language);
     const { minutes, seconds } = calculateSpeakingTime(preprocessedText, language, spm, textType, speakingStyle);
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulating calculation time
     setResult({ minutes, seconds });
     setShowBreakdown(true);
+    setIsCalculating(false);
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,9 +54,18 @@ const SpeakTimeCalculator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen bg-gray-100 p-6"
+    >
       <div className="max-w-4xl mx-auto space-y-6">
-        <div className="bg-pastel-green rounded-2xl p-6 shadow-sm">
+        <motion.div 
+          className="bg-pastel-green rounded-2xl p-6 shadow-sm"
+          whileHover={{ scale: 1.02 }}
+          transition={{ type: "spring", stiffness: 300 }}
+        >
           <Label htmlFor="text-input" className="text-lg font-semibold mb-2 flex items-center text-dark-text">
             <FileText className="mr-2" />
             Enter your text
@@ -64,16 +77,26 @@ const SpeakTimeCalculator = () => {
             onChange={handleTextChange}
             className="min-h-[200px] mb-2 bg-white rounded-xl"
           />
-          <div className="flex justify-between text-sm text-dark-text mb-2">
+          <motion.div 
+            className="flex justify-between text-sm text-dark-text mb-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
             <span>Words: {wordCount}</span>
             <span>Estimated Syllables: {syllableCount}</span>
-          </div>
+          </motion.div>
           <Input type="file" accept=".txt" onChange={handleFileUpload} className="hidden" id="file-upload" />
-          <label htmlFor="file-upload" className="cursor-pointer inline-flex items-center px-4 py-2 bg-white text-dark-text rounded-full hover:bg-gray-100 transition-colors">
+          <motion.label 
+            htmlFor="file-upload" 
+            className="cursor-pointer inline-flex items-center px-4 py-2 bg-white text-dark-text rounded-full hover:bg-gray-100 transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
             <Upload className="mr-2" size={16} />
             Upload Text File
-          </label>
-        </div>
+          </motion.label>
+        </motion.div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="bg-pastel-pink rounded-2xl p-6 shadow-sm">
@@ -130,7 +153,11 @@ const SpeakTimeCalculator = () => {
             </Select>
           </div>
           
-          <div className="bg-pastel-green rounded-2xl p-6 shadow-sm">
+          <motion.div 
+            className="bg-pastel-green rounded-2xl p-6 shadow-sm"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
             <Label htmlFor="spm-slider" className="text-lg font-semibold mb-2 flex items-center text-dark-text">
               <Clock className="mr-2" />
               Speaking Pace: {spm} SPM
@@ -144,30 +171,61 @@ const SpeakTimeCalculator = () => {
               onValueChange={(value) => setSpm(value[0])}
               className="bg-white rounded-xl"
             />
-            <div className="flex justify-between text-sm text-dark-text mt-2">
+            <motion.div 
+              className="flex justify-between text-sm text-dark-text mt-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+            >
               <span>Slow</span>
               <span>Average</span>
               <span>Fast</span>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
         
-        <Button onClick={handleCalculate} className="w-full bg-pastel-blue hover:bg-blue-200 text-dark-text transition-colors rounded-full">
-          <Calculator className="mr-2" size={16} />
-          Calculate Speaking Time
-        </Button>
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <Button 
+            onClick={handleCalculate} 
+            className="w-full bg-pastel-blue hover:bg-blue-200 text-dark-text transition-colors rounded-full"
+            disabled={isCalculating}
+          >
+            {isCalculating ? (
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              >
+                <Clock className="mr-2" size={16} />
+              </motion.div>
+            ) : (
+              <Calculator className="mr-2" size={16} />
+            )}
+            {isCalculating ? 'Calculating...' : 'Calculate Speaking Time'}
+          </Button>
+        </motion.div>
         
-        <ResultDisplay result={result} />
-        
-        {showBreakdown && (
-          <ResultsBreakdown
-            paragraphs={[{ text: text, time: result.minutes * 60 + result.seconds }]}
-            totalWords={wordCount}
-            totalSyllables={syllableCount}
-          />
-        )}
+        <AnimatePresence>
+          {showBreakdown && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+            >
+              <ResultDisplay result={result} />
+              <ResultsBreakdown
+                paragraphs={[{ text: text, time: result.minutes * 60 + result.seconds }]}
+                totalWords={wordCount}
+                totalSyllables={syllableCount}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
