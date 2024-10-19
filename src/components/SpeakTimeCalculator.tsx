@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { calculateSpeakingTime, preprocessSpecialCases } from '../utils/timeCalculator';
 import ResultDisplay from './ResultDisplay';
 import ResultsBreakdown from './ResultsBreakdown';
+import AnimatedCount from './AnimatedCount';
 import { Globe, Calculator, Upload, Clock, FileText, Mic } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -20,14 +21,21 @@ const SpeakTimeCalculator = () => {
   const [result, setResult] = useState({ minutes: 0, seconds: 0 });
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [wordCount, setWordCount] = useState(0);
+  const [charCount, setCharCount] = useState(0);
   const [syllableCount, setSyllableCount] = useState(0);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newText = e.target.value;
     setText(newText);
-    setWordCount(newText.trim().split(/\s+/).length);
-    setSyllableCount(newText.trim().split(/[aeiou]/gi).length);
+    setCharCount(newText.length);
+    setWordCount(newText.trim().split(/\s+/).filter(Boolean).length);
+    setSyllableCount(newText.trim().split(/[aeiou]/gi).length - 1);
+    
+    // Trigger text highlight animation
+    setIsAnalyzing(true);
+    setTimeout(() => setIsAnalyzing(false), 500);
   };
 
   const handleCalculate = async () => {
@@ -70,21 +78,29 @@ const SpeakTimeCalculator = () => {
             <FileText className="mr-2" />
             Enter your text
           </Label>
-          <Textarea
-            id="text-input"
-            placeholder="Paste or type your text here..."
-            value={text}
-            onChange={handleTextChange}
-            className="min-h-[200px] mb-2 bg-white rounded-xl"
-          />
+          <motion.div
+            animate={{
+              backgroundColor: isAnalyzing ? 'rgba(255, 255, 0, 0.1)' : 'transparent',
+            }}
+            transition={{ duration: 0.5 }}
+          >
+            <Textarea
+              id="text-input"
+              placeholder="Paste or type your text here..."
+              value={text}
+              onChange={handleTextChange}
+              className="min-h-[200px] mb-2 bg-white rounded-xl"
+            />
+          </motion.div>
           <motion.div 
             className="flex justify-between text-sm text-dark-text mb-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <span>Words: {wordCount}</span>
-            <span>Estimated Syllables: {syllableCount}</span>
+            <AnimatedCount label="Characters" count={charCount} />
+            <AnimatedCount label="Words" count={wordCount} />
+            <AnimatedCount label="Estimated Syllables" count={syllableCount} />
           </motion.div>
           <Input type="file" accept=".txt" onChange={handleFileUpload} className="hidden" id="file-upload" />
           <motion.label 
