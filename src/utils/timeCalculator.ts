@@ -1,4 +1,4 @@
-type Language = 'english' | 'french' | 'spanish';
+type Language = 'english' | 'french' | 'spanish' | 'indonesian';
 type TextType = 'presentation' | 'conversation' | 'poem' | 'script';
 type SpeakingStyle = 'fast' | 'normal' | 'slow' | 'formal' | 'informal';
 
@@ -28,6 +28,11 @@ const languageParams: Record<Language, LanguageParams> = {
     defaultSPM: 210,
     pauseRules: { comma: 0.2, period: 0.45, questionMark: 0.75, exclamationMark: 0.5 },
     syllableMultiplier: 1.2,
+  },
+  indonesian: {
+    defaultSPM: 190, // Indonesian tends to have a slightly slower speaking rate
+    pauseRules: { comma: 0.2, period: 0.5, questionMark: 0.75, exclamationMark: 0.5 },
+    syllableMultiplier: 1.3, // Indonesian words often have more syllables
   },
 };
 
@@ -76,7 +81,12 @@ const estimateSyllableCount = (text: string, language: Language): number => {
   let count = 0;
   
   for (const word of words) {
-    count += word.split(/[aeiouáéíóúàèìòùâêîôûäëïöü]/gi).length - 1 || 1;
+    if (language === 'indonesian') {
+      // Indonesian syllable estimation
+      count += word.split(/[aiueo]/gi).length - 1 || 1;
+    } else {
+      count += word.split(/[aeiouáéíóúàèìòùâêîôûäëïöü]/gi).length - 1 || 1;
+    }
   }
   
   return Math.round(count * languageParams[language].syllableMultiplier);

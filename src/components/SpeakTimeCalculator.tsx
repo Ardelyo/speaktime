@@ -3,7 +3,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { calculateSpeakingTime, preprocessSpecialCases } from '../utils/timeCalculator';
 import ResultDisplay from './ResultDisplay';
@@ -13,7 +12,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const SpeakTimeCalculator = () => {
   const [text, setText] = useState('');
-  const [language, setLanguage] = useState<'english' | 'french' | 'spanish'>('english');
+  const [language, setLanguage] = useState<'english' | 'french' | 'spanish' | 'indonesian'>('english');
   const [textType, setTextType] = useState<'presentation' | 'conversation' | 'poem' | 'script'>('conversation');
   const [speakingStyle, setSpeakingStyle] = useState<'fast' | 'normal' | 'slow' | 'formal' | 'informal'>('normal');
   const [spm, setSpm] = useState(200);
@@ -104,7 +103,7 @@ const SpeakTimeCalculator = () => {
               <Globe className="mr-2" />
               Language
             </Label>
-            <Select value={language} onValueChange={(value: 'english' | 'french' | 'spanish') => setLanguage(value)}>
+            <Select value={language} onValueChange={(value: 'english' | 'french' | 'spanish' | 'indonesian') => setLanguage(value)}>
               <SelectTrigger id="language-select" className="bg-white rounded-xl">
                 <SelectValue placeholder="Select language" />
               </SelectTrigger>
@@ -112,6 +111,7 @@ const SpeakTimeCalculator = () => {
                 <SelectItem value="english">English</SelectItem>
                 <SelectItem value="french">French</SelectItem>
                 <SelectItem value="spanish">Spanish</SelectItem>
+                <SelectItem value="indonesian">Indonesian</SelectItem>
               </SelectContent>
             </Select>
           </div>
